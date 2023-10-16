@@ -9,14 +9,14 @@ def decode(observation_ids):
     Figure 8.10 at https://web.stanford.edu/~jurafsky/slp3/8.pdf
     """
     # store the decoded states here
-    # pi = np.array([0.8, 0.2])
-    # n = len(pi)
-    # A = np.array([[0.7, 0.3], [0.4, 0.6]])
-    # B = np.array([[0.2, 0.4, 0.4], [0.5, 0.4, 0.1]])
-    pi = np.array([0.5, 0.5])
+    pi = np.array([0.8, 0.2])
     n = len(pi)
-    A = np.array([[0.3, 0.7], [0.6, 0.4]])
-    B = np.array([[0.2, 0.5, 0.3], [0.3, 0.1, 0.6]])
+    A = np.array([[0.7, 0.3], [0.4, 0.6]])
+    B = np.array([[0.2, 0.4, 0.4], [0.5, 0.4, 0.1]])
+    # pi = np.array([0.5, 0.5])
+    # n = len(pi)
+    # A = np.array([[0.3, 0.7], [0.6, 0.4]])
+    # B = np.array([[0.2, 0.5, 0.3], [0.3, 0.1, 0.6]])
     all_predictions = []
     for obs_ids in observation_ids:
         T = len(obs_ids)  # Sequence length
@@ -25,7 +25,7 @@ def decode(observation_ids):
         # TODO: Fill the viterbi table, back_pointer. Get the optimal sequence by backtracking
         for s in range(n):
             p = pi[s]
-            b = B[s][obs_ids[0]-1]
+            b = B[s][obs_ids[0] - 1]
             viterbi[s][0] = p * b
             back_pointer[s][0] = 0
         for t in range(1, T):
@@ -57,10 +57,11 @@ def decode(observation_ids):
         all_predictions.append(best_path)
         print("best path:", best_path)
     print(all_predictions)
-# 
+
+
 
 if __name__ == "__main__":
-    test_state_observation_ids = np.array([[2,1,1], [1, 1, 1], [1,1,2]])
+    test_state_observation_ids = np.array([[2, 1, 1], [1, 1, 1], [1, 1, 2]])
     decode(test_state_observation_ids)
     # back_pointer = np.array([[0,0,0], [0,1,1]])
     # best_path = [0,0,1]
@@ -71,6 +72,4 @@ if __name__ == "__main__":
     #     bsj = i+1
     #     print(f"[{bsi}][{bsj}]")
     #     best_path[i] = back_pointer[best_path[i+1]][i+1]
-        # print(best_path)
-    
-
+    # print(best_path)

@@ -126,38 +126,40 @@ class HMM:
             back_pointer = np.zeros((self.n, T))  # backpointers for each state+sequence id
             # TODO: Fill the viterbi table, back_pointer. Get the optimal sequence by backtracking
             for s in range(self.n):
-                p = self.pi[s]
-                b = self.B[s][obs_ids[0]-1]
-                viterbi[s][0] = p * b
+                pi = self.pi[s]
+                b = self.B[s][obs_ids[0]]
+                viterbi[s][0] = pi + b
                 back_pointer[s][0] = 0
             for t in range(1, T):
                 # print(f"Viterbit{t}: {viterbi} ")
                 # print(f"back_pointer{t}: {back_pointer}")
 
                 for s in range(self.n):
-                    max_prob = 0
-                    max_state = 0
+                    max_prob = float('-inf')
+                    max_state = float('-inf')
                     for i in range(self.n):
-                        v = viterbi[i][t - 1]
+                        v = viterbi[i][t-1]
                         a = self.A[i][s]
-                        b = self.B[s][obs_ids[t] - 1]
-                        prob = v * a * b
+                        b = self.B[s][obs_ids[t]]
+                        prob = v + a + b
                         if prob > max_prob:
-                            max_prob = prob
+                            max_prob = prob 
                             max_state = i
                     viterbi[s][t] = max_prob
                     back_pointer[s][t] = max_state
             best_path = [0] * T
-            # print("v[T-1]:",viterbi[:, T - 1])
-            # print("argmax positon: ",np.argmax(viterbi[:, T - 1]))
-            best_path[T - 1] = np.argmax(viterbi[:, T - 1])  # type: ignore
-            print("v:\n", viterbi)
-            # print("back pointers:\n", back_pointer)
-            # print("best path:", best_path)
+            # print("\nv[T-1]:",viterbi[:, T - 1])
+            # print("\nargmax positon: ",np.argmax(viterbi[:, T- 1]))
+            best_path[T - 1] = np.argmax(viterbi[:, T- 1])  # type: ignore
+            # print("\nv:\n", viterbi)
+            # print("\nback pointers:\n", back_pointer)
+            # print("\nbest path start:", best_path)
             for t in range(T - 2, -1, -1):
-                best_path[t] = int(back_pointer[best_path[t + 1]][t + 1])
+                print()
+                best_path[t] = int(back_pointer[best_path[t+1]][t+1])
+                # print(f"best path {t}: {best_path}")
             all_predictions.append(best_path)
-        # print(all_predictions)
+        # print("All Predictions: ",all_predictions)
         return all_predictions
 
 
@@ -232,7 +234,7 @@ def test_decode():
     predicted_forward = np.exp(test_forwards)[0]
 
     assert np.round(predicted_forward, 4) == expected_prob
-
+    
     ### TEST Viterbi Decoding Method ###
     import itertools
     
@@ -242,12 +244,11 @@ def test_decode():
         all_possibs = list(itertools.product(state_s, repeat=T))
         all_obs = [test_obs] * len(all_possibs)
         all_forwards = test_hmm_tagger.path_log_prob(all_possibs, all_obs) # type: ignore
-        print(all_forwards)
+       
         best_index = np.argmax(all_forwards)
-        print(best_index)
+
         best_path_true = all_possibs[best_index]
-        print(all_possibs)
-        print(best_path_true)
+
         return best_path_true
 
     test_observations = [2, 1, 1]
@@ -255,20 +256,19 @@ def test_decode():
     bp_true = brute_force(test_observations, 2)
 
     decoded_states = test_hmm_tagger.decode([test_observations])
-    print(tuple(decoded_states[0]))
-    # print(bp_true)
-    assert tuple(decoded_states[0]) == bp_true
-    print("test 1 passed")
 
+    
+    assert tuple(decoded_states[0]) == bp_true
+
+    
     test_observations = [1, 1, 1]
 
     bp_true = brute_force(test_observations, 2)
 
     decoded_states = test_hmm_tagger.decode([test_observations])
-    print(tuple(decoded_states[0]))
-    # print(bp_true)
+
     assert tuple(decoded_states[0]) == bp_true
-    print("test 2 passed")
+
 
     test_observations = [1, 1, 2]
 
@@ -276,8 +276,7 @@ def test_decode():
 
     decoded_states = test_hmm_tagger.decode([test_observations])
     
-    # print(tuple(decoded_states[0]))
-    # print(bp_true)
+ 
     assert tuple(decoded_states[0]) == bp_true
 
     print('All Test Cases Passed!')
