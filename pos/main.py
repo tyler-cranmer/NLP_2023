@@ -1,3 +1,4 @@
+from turtle import back
 import numpy as np
 
 
@@ -20,10 +21,7 @@ def decode(observation_ids):
         # TODO: Fill the viterbi table, back_pointer. Get the optimal sequence by backtracking
         for s in range(n):
             p = pi[s]
-            bs = B[s]
             b = B[s][obs_ids[0]-1]
-            obs_id = obs_ids[0]
-
             viterbi[s][0] = p * b
             back_pointer[s][0] = 0
         for t in range(1, T):
@@ -44,14 +42,30 @@ def decode(observation_ids):
                 viterbi[s][t] = max_prob
                 back_pointer[s][t] = max_state
         best_path = [0] * T
-        print("v[T-1]:",viterbi[:, T - 1])
-        print("argmax positon: ",np.argmax(viterbi[:, T - 1]))
+        # print("v[T-1]:",viterbi[:, T - 1])
+        # print("argmax positon: ",np.argmax(viterbi[:, T - 1]))
         best_path[T - 1] = np.argmax(viterbi[:, T - 1])  # type: ignore
         print("v:\n", viterbi)
-        print("back pointers:\n", back_pointer)
+        # print("back pointers:\n", back_pointer)
         print("best path:", best_path)
-
+        for t in range(T - 2, -1, -1):
+            best_path[t] = int(back_pointer[best_path[t + 1]][t + 1])
+        all_predictions.append(best_path)
+    print(all_predictions)
+# 
 
 if __name__ == "__main__":
     test_state_observation_ids = np.array([[1, 3, 1], [1, 1, 1]])
     decode(test_state_observation_ids)
+    # back_pointer = np.array([[0,0,0], [0,1,1]])
+    # best_path = [0,0,1]
+    # print(best_path)
+    # for i in range(len(best_path)-2, -1, -1):
+
+    #     bsi = best_path[i+1]
+    #     bsj = i+1
+    #     print(f"[{bsi}][{bsj}]")
+    #     best_path[i] = back_pointer[best_path[i+1]][i+1]
+        # print(best_path)
+    
+
