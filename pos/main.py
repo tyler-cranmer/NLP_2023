@@ -9,10 +9,14 @@ def decode(observation_ids):
     Figure 8.10 at https://web.stanford.edu/~jurafsky/slp3/8.pdf
     """
     # store the decoded states here
-    pi = np.array([0.8, 0.2])
+    # pi = np.array([0.8, 0.2])
+    # n = len(pi)
+    # A = np.array([[0.7, 0.3], [0.4, 0.6]])
+    # B = np.array([[0.2, 0.4, 0.4], [0.5, 0.4, 0.1]])
+    pi = np.array([0.5, 0.5])
     n = len(pi)
-    A = np.array([[0.7, 0.3], [0.4, 0.6]])
-    B = np.array([[0.2, 0.4, 0.4], [0.5, 0.4, 0.1]])
+    A = np.array([[0.3, 0.7], [0.6, 0.4]])
+    B = np.array([[0.2, 0.5, 0.3], [0.3, 0.1, 0.6]])
     all_predictions = []
     for obs_ids in observation_ids:
         T = len(obs_ids)  # Sequence length
@@ -47,15 +51,16 @@ def decode(observation_ids):
         best_path[T - 1] = np.argmax(viterbi[:, T - 1])  # type: ignore
         print("v:\n", viterbi)
         # print("back pointers:\n", back_pointer)
-        print("best path:", best_path)
+        # print("best path:", best_path)
         for t in range(T - 2, -1, -1):
             best_path[t] = int(back_pointer[best_path[t + 1]][t + 1])
         all_predictions.append(best_path)
+        print("best path:", best_path)
     print(all_predictions)
 # 
 
 if __name__ == "__main__":
-    test_state_observation_ids = np.array([[1, 3, 1], [1, 1, 1]])
+    test_state_observation_ids = np.array([[2,1,1], [1, 1, 1], [1,1,2]])
     decode(test_state_observation_ids)
     # back_pointer = np.array([[0,0,0], [0,1,1]])
     # best_path = [0,0,1]
