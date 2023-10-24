@@ -108,7 +108,7 @@ class NERTagger(torch.nn.Module):
     def decode(self, input_seq: torch.Tensor) -> List[int]:
         emissions = self.make_emissions(input_seq)
         # Decode the argmax sequence of labels with viterbi
-        return self.crf_decoder.decode(emissions)
+        return self.crf_decoder.decode(emissions) # type: ignore
 
     def make_emissions(self, input_seq: torch.Tensor) -> torch.Tensor:
         """Compute a probability distribution over the tags for each
@@ -215,7 +215,7 @@ def predict(model: torch.nn.Module, feature_sents: List[List[int]]) -> List[torc
     out = []
     for features in feature_sents:
         # Dummy batch dimension
-        features = features.unsqueeze(0)
+        features = features.unsqueeze(0) # type: ignore
         # -> List[List[int]]
         preds = model.decode(features)
         preds = [torch.tensor(p) for p in preds]
